@@ -1,4 +1,4 @@
-module sqlbuilder
+module github.com/chenquan/sqlplus
 
 go 1.16
 

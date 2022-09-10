@@ -1,4 +1,4 @@
-package sqlhook
+package sqlplus
 
 import (
 	"database/sql/driver"
