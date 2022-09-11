@@ -19,7 +19,7 @@ type conn struct {
 }
 
 func (c *conn) ExecContext(ctx context.Context, query string, args []driver.NamedValue) (result driver.Result, err error) {
-	ctx, err = c.BeforeExecContext(ctx, query, args)
+	ctx, query, args, err = c.BeforeExecContext(ctx, query, args, nil)
 	defer func() {
 		_, result, err = c.AfterExecContext(ctx, query, args, result, err)
 	}()
@@ -48,7 +48,7 @@ func (c *conn) ExecContext(ctx context.Context, query string, args []driver.Name
 }
 
 func (c *conn) QueryContext(ctx context.Context, query string, args []driver.NamedValue) (rows driver.Rows, err error) {
-	ctx, err = c.BeforeQueryContext(ctx, query, args)
+	ctx, query, args, err = c.BeforeQueryContext(ctx, query, args, nil)
 	defer func() {
 		_, rows, err = c.AfterQueryContext(ctx, query, args, rows, err)
 	}()
@@ -78,7 +78,7 @@ func (c *conn) QueryContext(ctx context.Context, query string, args []driver.Nam
 }
 
 func (c *conn) PrepareContext(ctx context.Context, query string) (s driver.Stmt, err error) {
-	ctx, err = c.BeforePrepareContext(ctx, query)
+	ctx, query, err = c.BeforePrepareContext(ctx, query, nil)
 	defer func() {
 		_, s, err = c.AfterPrepareContext(ctx, query, s, err)
 	}()
@@ -101,7 +101,7 @@ func (c *conn) PrepareContext(ctx context.Context, query string) (s driver.Stmt,
 }
 
 func (c *conn) BeginTx(ctx context.Context, opts driver.TxOptions) (dd driver.Tx, err error) {
-	ctx, err = c.BeforeBeginTx(ctx, opts)
+	ctx, opts, err = c.BeforeBeginTx(ctx, opts, nil)
 	defer func() {
 		_, dd, err = c.AfterBeginTx(ctx, opts, dd, err)
 	}()

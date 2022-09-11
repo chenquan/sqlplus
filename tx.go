@@ -12,7 +12,7 @@ type tx struct {
 
 func (t *tx) Commit() (err error) {
 	ctx := context.Background()
-	ctx, err = t.BeforeCommit(ctx)
+	ctx, err = t.BeforeCommit(ctx, nil)
 	defer func() {
 		_, err = t.AfterCommit(ctx, err)
 	}()
@@ -30,7 +30,7 @@ func (t *tx) Commit() (err error) {
 
 func (t *tx) Rollback() (err error) {
 	ctx := context.Background()
-	ctx, err = t.BeforeRollback(ctx)
+	ctx, err = t.BeforeRollback(ctx, nil)
 	defer func() {
 		_, err = t.AfterRollback(ctx, err)
 	}()

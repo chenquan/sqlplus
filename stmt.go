@@ -18,9 +18,10 @@ type stmt struct {
 }
 
 func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (rows driver.Rows, err error) {
-	ctx, err = s.BeforeStmtQueryContext(ctx, s.query, args)
+	query := s.query
+	ctx, args, err = s.BeforeStmtQueryContext(ctx, query, args, nil)
 	defer func() {
-		_, rows, err = s.AfterStmtQueryContext(ctx, s.query, args, rows, err)
+		_, rows, err = s.AfterStmtQueryContext(ctx, query, args, rows, err)
 	}()
 	if err != nil {
 		return nil, err
@@ -29,22 +30,20 @@ func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (rows
 	switch ss := s.Stmt.(type) {
 	case driver.StmtQueryContext:
 		return ss.QueryContext(ctx, args)
-	case interface {
-		Query(args []driver.Value) (driver.Rows, error)
-	}:
+	default:
 		value, err := namedValueToValue(args)
 		if err != nil {
 			return nil, err
 		}
 
-		return ss.Query(value)
+		return s.Query(value)
 	}
 
-	return nil, errNoInterfaceImplementation
 }
 
 func (s *stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (r driver.Result, err error) {
-	ctx, err = s.BeforeStmtExecContext(ctx, s.query, args)
+
+	ctx, args, err = s.BeforeStmtExecContext(ctx, s.query, args, nil)
 	defer func() {
 		_, r, err = s.AfterStmtExecContext(ctx, s.query, args, r, err)
 	}()
@@ -55,16 +54,12 @@ func (s *stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (r dri
 	switch ss := s.Stmt.(type) {
 	case driver.StmtExecContext:
 		return ss.ExecContext(ctx, args)
-	case interface {
-		Exec(args []driver.Value) (driver.Result, error)
-	}:
+	default:
 		value, err := namedValueToValue(args)
 		if err != nil {
 			return nil, err
 		}
 
-		return ss.Exec(value)
+		return s.Exec(value)
 	}
-
-	return nil, errNoInterfaceImplementation
 }
