@@ -14,7 +14,12 @@ var (
 type prepareContextKey struct{}
 
 func PrepareContextFromContext(ctx context.Context) context.Context {
-	return ctx.Value(prepareContextKey{}).(context.Context)
+	value := ctx.Value(prepareContextKey{})
+	if value != nil {
+		return value.(context.Context)
+	}
+
+	return nil
 }
 
 type stmt struct {
