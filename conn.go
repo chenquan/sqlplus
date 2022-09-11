@@ -97,7 +97,7 @@ func (c *conn) PrepareContext(ctx context.Context, query string) (s driver.Stmt,
 		return st, err
 	}
 
-	return &stmt{Stmt: st, StmtHook: c.ConnHook.(StmtHook), query: query}, nil
+	return &stmt{Stmt: st, StmtHook: c.ConnHook.(StmtHook), query: query, prepareContext: ctx}, nil
 }
 
 func (c *conn) BeginTx(ctx context.Context, opts driver.TxOptions) (dd driver.Tx, err error) {
