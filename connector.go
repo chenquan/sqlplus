@@ -13,7 +13,7 @@ type connector struct {
 }
 
 func (c *connector) Connect(ctx context.Context) (dc driver.Conn, err error) {
-	ctx, err = c.BeforeConnect(ctx)
+	ctx, err = c.BeforeConnect(ctx, nil)
 	defer func() {
 		_, dc, err = c.AfterConnect(ctx, dc, err)
 	}()
