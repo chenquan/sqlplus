@@ -11,14 +11,22 @@ var (
 	_ driver.StmtQueryContext = (*stmt)(nil)
 )
 
+type prepareContextKey struct{}
+
+func PrepareContextFromContext(ctx context.Context) context.Context {
+	return ctx.Value(prepareContextKey{}).(context.Context)
+}
+
 type stmt struct {
 	driver.Stmt
 	query string
 	StmtHook
+	prepareContext context.Context
 }
 
 func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (rows driver.Rows, err error) {
 	query := s.query
+	ctx = context.WithValue(ctx, prepareContextKey{}, s.prepareContext)
 	ctx, args, err = s.BeforeStmtQueryContext(ctx, query, args, nil)
 	defer func() {
 		_, rows, err = s.AfterStmtQueryContext(ctx, query, args, rows, err)
