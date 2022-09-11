@@ -12,10 +12,10 @@ type connector struct {
 	ConnectorHook
 }
 
-func (c *connector) Connect(ctx context.Context) (dd driver.Conn, err error) {
+func (c *connector) Connect(ctx context.Context) (dc driver.Conn, err error) {
 	ctx, err = c.BeforeConnect(ctx)
 	defer func() {
-		_, err = c.AfterConnect(ctx, err)
+		_, dc, err = c.AfterConnect(ctx, dc, err)
 	}()
 	if err != nil {
 		return nil, err
