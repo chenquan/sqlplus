@@ -20,7 +20,7 @@ type stmt struct {
 func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (rows driver.Rows, err error) {
 	ctx, err = s.BeforeStmtQueryContext(ctx, s.query, args)
 	defer func() {
-		_, err = s.AfterStmtQueryContext(ctx, s.query, args, err)
+		_, rows, err = s.AfterStmtQueryContext(ctx, s.query, args, rows, err)
 	}()
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (rows
 func (s *stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (r driver.Result, err error) {
 	ctx, err = s.BeforeStmtExecContext(ctx, s.query, args)
 	defer func() {
-		_, err = s.AfterStmtExecContext(ctx, s.query, args, err)
+		_, r, err = s.AfterStmtExecContext(ctx, s.query, args, r, err)
 	}()
 	if err != nil {
 		return nil, err
