@@ -13,5 +13,5 @@ Implement the `sqlplus.Hook` interface and wrap it with `sqlplus.New(d driver.Dr
 
 # example
 
-- [https://github.com/chenquan/sqltrace](sqltrace): A sql link tracking library, 
+- [sqltrace](https://github.com/chenquan/sqltrace): A sql link tracking library, 
 suitable for any relational database such as MySQL, oracle, SQL Server, PostgreSQL,TiDB etc.
