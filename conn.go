@@ -120,7 +120,7 @@ func (c *conn) BeginTx(ctx context.Context, opts driver.TxOptions) (dd driver.Tx
 		return nil, err
 	}
 
-	return &tx{Tx: t, TxHook: c.ConnHook.(TxHook)}, nil
+	return &tx{Tx: t, TxHook: c.ConnHook.(TxHook), txContext: ctx}, nil
 }
 
 func namedValueToValue(named []driver.NamedValue) ([]driver.Value, error) {
