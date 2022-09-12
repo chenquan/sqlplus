@@ -55,9 +55,10 @@ func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (rows
 }
 
 func (s *stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (r driver.Result, err error) {
-	ctx, args, err = s.BeforeStmtExecContext(ctx, s.query, args, nil)
+	query := s.query
+	ctx, args, err = s.BeforeStmtExecContext(ctx, query, args, nil)
 	defer func() {
-		_, r, err = s.AfterStmtExecContext(ctx, s.query, args, r, err)
+		_, r, err = s.AfterStmtExecContext(ctx, query, args, r, err)
 	}()
 	if err != nil {
 		return nil, err
