@@ -47,6 +47,7 @@ func TestNew(t *testing.T) {
 
 		driverContext := d.(driver.DriverContext)
 		openConnector, err := driverContext.OpenConnector("any")
+		assert.NoError(t, err)
 		connect, err = openConnector.Connect(context.Background())
 		assert.NoError(t, err)
 		assert.NotNil(t, connect)
