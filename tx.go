@@ -5,12 +5,14 @@ import (
 	"database/sql/driver"
 )
 
-type txContextKey struct{}
-type tx struct {
-	driver.Tx
-	TxHook
-	txContext context.Context
-}
+type (
+	tx struct {
+		driver.Tx
+		TxHook
+		txContext context.Context
+	}
+	txContextKey struct{}
+)
 
 func TxContextFromContext(ctx context.Context) context.Context {
 	value := ctx.Value(txContextKey{})
@@ -20,6 +22,8 @@ func TxContextFromContext(ctx context.Context) context.Context {
 
 	return nil
 }
+
+// -----------------
 
 func (t *tx) Commit() (err error) {
 	ctx := context.WithValue(context.Background(), txContextKey{}, t.txContext)

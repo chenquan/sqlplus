@@ -27,7 +27,7 @@ func (m *mockHook) BeforeExecContext(ctx context.Context, query string, args []d
 	return ctx, query, args, err
 }
 
-func (m *mockHook) AfterExecContext(ctx context.Context, query string, args []driver.NamedValue, r driver.Result, err error) (context.Context, driver.Result, error) {
+func (m *mockHook) AfterExecContext(ctx context.Context, _ string, _ []driver.NamedValue, _ driver.Result, err error) (context.Context, driver.Result, error) {
 	m.Write("AfterExecContext")
 	return ctx, nil, err
 }
@@ -37,10 +37,9 @@ func (m *mockHook) BeforeBeginTx(ctx context.Context, opts driver.TxOptions, err
 	return ctx, opts, err
 }
 
-func (m *mockHook) AfterBeginTx(ctx context.Context, opts driver.TxOptions, dd driver.Tx, err error) (context.Context, driver.Tx, error) {
+func (m *mockHook) AfterBeginTx(ctx context.Context, _ driver.TxOptions, dt driver.Tx, err error) (context.Context, driver.Tx, error) {
 	m.Write("AfterBeginTx")
-	return ctx, dd, err
-
+	return ctx, dt, err
 }
 
 func (m *mockHook) BeforeQueryContext(ctx context.Context, query string, args []driver.NamedValue, err error) (context.Context, string, []driver.NamedValue, error) {
@@ -48,7 +47,7 @@ func (m *mockHook) BeforeQueryContext(ctx context.Context, query string, args []
 	return ctx, query, args, err
 }
 
-func (m *mockHook) AfterQueryContext(ctx context.Context, query string, args []driver.NamedValue, rows driver.Rows, err error) (context.Context, driver.Rows, error) {
+func (m *mockHook) AfterQueryContext(ctx context.Context, _ string, _ []driver.NamedValue, rows driver.Rows, err error) (context.Context, driver.Rows, error) {
 	m.Write("AfterQueryContext")
 	return ctx, rows, err
 }
@@ -58,49 +57,128 @@ func (m *mockHook) BeforePrepareContext(ctx context.Context, query string, err e
 	return ctx, query, err
 }
 
-func (m *mockHook) AfterPrepareContext(ctx context.Context, query string, s driver.Stmt, err error) (context.Context, driver.Stmt, error) {
+func (m *mockHook) AfterPrepareContext(ctx context.Context, _ string, ds driver.Stmt, err error) (context.Context, driver.Stmt, error) {
 	m.Write("AfterPrepareContext")
-	return ctx, s, err
+	return ctx, ds, err
 }
 
 func (m *mockHook) BeforeCommit(ctx context.Context, err error) (context.Context, error) {
 	m.Write("BeforeCommit")
+	txContext := TxContextFromContext(ctx)
+	if txContext == nil {
+		panic("txContext is nil")
+	}
+
+	prepareContext := PrepareContextFromContext(ctx)
+	if prepareContext != nil {
+		panic("prepareContext is not nil")
+	}
+
 	return ctx, err
 }
 
 func (m *mockHook) AfterCommit(ctx context.Context, err error) (context.Context, error) {
 	m.Write("AfterCommit")
+	txContext := TxContextFromContext(ctx)
+	if txContext == nil {
+		panic("txContext is nil")
+	}
+
+	prepareContext := PrepareContextFromContext(ctx)
+	if prepareContext != nil {
+		panic("prepareContext is not nil")
+	}
+
 	return ctx, err
 }
 
 func (m *mockHook) BeforeRollback(ctx context.Context, err error) (context.Context, error) {
 	m.Write("BeforeRollback")
+	txContext := TxContextFromContext(ctx)
+	if txContext == nil {
+		panic("txContext is nil")
+	}
+
+	prepareContext := PrepareContextFromContext(ctx)
+	if prepareContext != nil {
+		panic("prepareContext is not nil")
+	}
+
 	return ctx, err
 }
 
 func (m *mockHook) AfterRollback(ctx context.Context, err error) (context.Context, error) {
 	m.Write("AfterRollback")
+	txContext := TxContextFromContext(ctx)
+	if txContext == nil {
+		panic("txContext is nil")
+	}
+
+	prepareContext := PrepareContextFromContext(ctx)
+	if prepareContext != nil {
+		panic("prepareContext is not nil")
+	}
+
 	return ctx, err
-
 }
 
-func (m *mockHook) BeforeStmtQueryContext(ctx context.Context, query string, args []driver.NamedValue, err error) (context.Context, string, []driver.NamedValue, error) {
+func (m *mockHook) BeforeStmtQueryContext(ctx context.Context, _ string, args []driver.NamedValue, err error) (context.Context, []driver.NamedValue, error) {
 	m.Write("BeforeStmtQueryContext")
-	return ctx, query, args, err
+	prepareContext := PrepareContextFromContext(ctx)
+	if prepareContext == nil {
+		panic("prepareContext is nil")
+	}
+
+	txContext := TxContextFromContext(ctx)
+	if txContext != nil {
+		panic("txContext is not nil")
+	}
+
+	return ctx, args, err
 }
 
-func (m *mockHook) AfterStmtQueryContext(ctx context.Context, query string, args []driver.NamedValue, rows driver.Rows, err error) (context.Context, driver.Rows, error) {
+func (m *mockHook) AfterStmtQueryContext(ctx context.Context, _ string, _ []driver.NamedValue, rows driver.Rows, err error) (context.Context, driver.Rows, error) {
 	m.Write("AfterStmtQueryContext")
+	prepareContext := PrepareContextFromContext(ctx)
+	if prepareContext == nil {
+		panic("prepareContext is nil")
+	}
+
+	txContext := TxContextFromContext(ctx)
+	if txContext != nil {
+		panic("txContext is not nil")
+	}
+
 	return ctx, rows, err
 }
 
-func (m *mockHook) BeforeStmtExecContext(ctx context.Context, query string, args []driver.NamedValue, err error) (context.Context, string, []driver.NamedValue, error) {
+func (m *mockHook) BeforeStmtExecContext(ctx context.Context, _ string, args []driver.NamedValue, err error) (context.Context, []driver.NamedValue, error) {
 	m.Write("BeforeStmtExecContext")
-	return ctx, query, args, err
+	prepareContext := PrepareContextFromContext(ctx)
+	if prepareContext == nil {
+		panic("prepareContext is nil")
+	}
+
+	txContext := TxContextFromContext(ctx)
+	if txContext != nil {
+		panic("txContext is not nil")
+	}
+
+	return ctx, args, err
 }
 
-func (m *mockHook) AfterStmtExecContext(ctx context.Context, query string, args []driver.NamedValue, r driver.Result, err error) (context.Context, driver.Result, error) {
+func (m *mockHook) AfterStmtExecContext(ctx context.Context, _ string, _ []driver.NamedValue, r driver.Result, err error) (context.Context, driver.Result, error) {
 	m.Write("AfterStmtExecContext")
+	prepareContext := PrepareContextFromContext(ctx)
+	if prepareContext == nil {
+		panic("prepareContext is nil")
+	}
+
+	txContext := TxContextFromContext(ctx)
+	if txContext != nil {
+		panic("txContext is not nil")
+	}
+
 	return ctx, r, err
 }
 
