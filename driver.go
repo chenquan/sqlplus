@@ -5,29 +5,29 @@ import (
 )
 
 var (
-	_ driver.Driver        = (*Driver)(nil)
-	_ driver.DriverContext = (*DriverCtx)(nil)
+	_ driver.Driver        = (*wrappedDriver)(nil)
+	_ driver.DriverContext = (*wrappedDriverCtx)(nil)
 )
 
-type DriverCtx struct {
+type wrappedDriverCtx struct {
 	driver.Driver
 	Hook
 }
 
-type Driver struct {
+type wrappedDriver struct {
 	driver.Driver
 	Hook
 }
 
 func New(d driver.Driver, hook Hook) driver.Driver {
 	if _, ok := d.(driver.DriverContext); ok {
-		return &DriverCtx{Driver: d, Hook: hook}
+		return &wrappedDriverCtx{Driver: d, Hook: hook}
 	}
 
-	return &Driver{Driver: d, Hook: hook}
+	return &wrappedDriver{Driver: d, Hook: hook}
 }
 
-func (d Driver) Open(name string) (driver.Conn, error) {
+func (d *wrappedDriver) Open(name string) (driver.Conn, error) {
 	c, err := d.Driver.Open(name)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (d Driver) Open(name string) (driver.Conn, error) {
 
 // -----------------
 
-func (d DriverCtx) OpenConnector(name string) (driver.Connector, error) {
+func (d *wrappedDriverCtx) OpenConnector(name string) (driver.Connector, error) {
 	if dd, ok := d.Driver.(driver.DriverContext); ok {
 		openConnector, err := dd.OpenConnector(name)
 		if err != nil {

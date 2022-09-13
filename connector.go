@@ -30,5 +30,5 @@ func (c *connector) Connect(ctx context.Context) (dc driver.Conn, err error) {
 }
 
 func (c *connector) Driver() driver.Driver {
-	return &Driver{Driver: c.Connector.Driver(), Hook: c.ConnectorHook.(Hook)}
+	return &wrappedDriver{Driver: c.Connector.Driver(), Hook: c.ConnectorHook.(Hook)}
 }

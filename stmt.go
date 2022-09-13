@@ -11,7 +11,15 @@ var (
 	_ driver.StmtQueryContext = (*stmt)(nil)
 )
 
-type prepareContextKey struct{}
+type (
+	stmt struct {
+		driver.Stmt
+		query string
+		StmtHook
+		prepareContext context.Context
+	}
+	prepareContextKey struct{}
+)
 
 func PrepareContextFromContext(ctx context.Context) context.Context {
 	value := ctx.Value(prepareContextKey{})
@@ -22,12 +30,7 @@ func PrepareContextFromContext(ctx context.Context) context.Context {
 	return nil
 }
 
-type stmt struct {
-	driver.Stmt
-	query string
-	StmtHook
-	prepareContext context.Context
-}
+// -----------------
 
 func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (rows driver.Rows, err error) {
 	query := s.query
@@ -56,6 +59,7 @@ func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (rows
 
 func (s *stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (r driver.Result, err error) {
 	query := s.query
+	ctx = context.WithValue(ctx, prepareContextKey{}, s.prepareContext)
 	ctx, args, err = s.BeforeStmtExecContext(ctx, query, args, nil)
 	defer func() {
 		_, r, err = s.AfterStmtExecContext(ctx, query, args, r, err)

@@ -13,7 +13,7 @@ var _ driver.Conn = (*mockConn)(nil)
 type mockConn struct {
 }
 
-func (c *mockConn) Prepare(query string) (driver.Stmt, error) {
+func (c *mockConn) Prepare(_ string) (driver.Stmt, error) {
 	return &mockStmt{}, nil
 }
 
@@ -33,7 +33,7 @@ type mockConnQueryer struct {
 	driver.Conn
 }
 
-func (m *mockConnQueryer) Query(query string, args []driver.Value) (driver.Rows, error) {
+func (m *mockConnQueryer) Query(_ string, _ []driver.Value) (driver.Rows, error) {
 	return nil, nil
 }
 
@@ -45,7 +45,7 @@ type mockConnQueryerContext struct {
 	driver.Conn
 }
 
-func (m *mockConnExecer) Exec(query string, args []driver.Value) (driver.Result, error) {
+func (m *mockConnExecer) Exec(_ string, _ []driver.Value) (driver.Result, error) {
 	return nil, nil
 }
 
@@ -57,7 +57,7 @@ type mockConnExecer struct {
 	driver.Conn
 }
 
-func (m *mockConnQueryerContext) QueryContext(ctx context.Context, query string, args []driver.NamedValue) (driver.Rows, error) {
+func (m *mockConnQueryerContext) QueryContext(_ context.Context, _ string, _ []driver.NamedValue) (driver.Rows, error) {
 	return nil, nil
 }
 
@@ -68,7 +68,7 @@ type mockConnExecerContext struct {
 	driver.Conn
 }
 
-func (m *mockConnExecerContext) ExecContext(ctx context.Context, query string, args []driver.NamedValue) (driver.Result, error) {
+func (m *mockConnExecerContext) ExecContext(_ context.Context, _ string, _ []driver.NamedValue) (driver.Result, error) {
 	return nil, nil
 }
 
@@ -79,7 +79,7 @@ type mockConnBeginTx struct {
 	driver.Conn
 }
 
-func (m *mockConnBeginTx) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx, error) {
+func (m *mockConnBeginTx) BeginTx(_ context.Context, _ driver.TxOptions) (driver.Tx, error) {
 	return &mockTx{}, nil
 }
 
@@ -87,9 +87,10 @@ func (m *mockConnBeginTx) BeginTx(ctx context.Context, opts driver.TxOptions) (d
 
 func createMockConn() (*conn, *mockHook) {
 	m := &mockHook{}
+	hooks := NewMultiHook(m)
 	c := &conn{
 		Conn:     &mockConn{},
-		ConnHook: m,
+		ConnHook: hooks,
 	}
 	return c, m
 }
