@@ -9,17 +9,21 @@
 
 A sql enhancement tool library based on `database/sql/driver`
 
-# installation
+# 😜installation
 
 ```shell
 go get -u github.com/chenquan/sqlplus
 ```
 
-# usage
+# 👏how to use
 
 Implement the `sqlplus.Hook` interface and wrap it with `sqlplus.New(d driver.Driver, hook Hook) driver.Driver`
 
-# example
+# 👐ecology
 
-- [sqltrace](https://github.com/chenquan/sqltrace): A sql tracing library, suitable for any relational database such as
-  Sqlite3, MySQL, Oracle, SQL Server, PostgreSQL, TiDB, etc.
+- [sqltrace](https://github.com/chenquan/sqltrace): A low-code intrusion SQL tracing library, suitable for any
+  relational database (Sqlite3, MySQL, Oracle, SQL Server, PostgreSQL, TiDB, etc.) and ORM libraries for various
+  relational database (gorm, xorm, sqlx, etc.)
+- [sqlbreaker](https://github.com/chenquan/sqlbreaker): A low-code intrusion SQL breaker library, suitable for any
+  relational database (Sqlite3, MySQL, Oracle, SQL Server, PostgreSQL, TiDB, etc.) and ORM libraries for various
+  relational database (gorm, xorm, sqlx, etc.)
