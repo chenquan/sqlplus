@@ -22,8 +22,8 @@ func (h *multiHook) BeforeConnect(ctx context.Context, err error) (context.Conte
 }
 
 func (h *multiHook) AfterConnect(ctx context.Context, dc driver.Conn, err error) (context.Context, driver.Conn, error) {
-	for _, hook := range h.hooks {
-		ctx, dc, err = hook.AfterConnect(ctx, dc, err)
+	for i := len(h.hooks) - 1; i >= 0; i-- {
+		ctx, dc, err = h.hooks[i].AfterConnect(ctx, dc, err)
 	}
 
 	return ctx, dc, err
@@ -38,8 +38,8 @@ func (h *multiHook) BeforeExecContext(ctx context.Context, query string, args []
 }
 
 func (h *multiHook) AfterExecContext(ctx context.Context, query string, args []driver.NamedValue, r driver.Result, err error) (context.Context, driver.Result, error) {
-	for _, hook := range h.hooks {
-		ctx, r, err = hook.AfterExecContext(ctx, query, args, r, err)
+	for i := len(h.hooks) - 1; i >= 0; i-- {
+		ctx, r, err = h.hooks[i].AfterExecContext(ctx, query, args, r, err)
 	}
 
 	return ctx, r, err
@@ -54,8 +54,8 @@ func (h *multiHook) BeforeBeginTx(ctx context.Context, opts driver.TxOptions, er
 }
 
 func (h *multiHook) AfterBeginTx(ctx context.Context, opts driver.TxOptions, dd driver.Tx, err error) (context.Context, driver.Tx, error) {
-	for _, hook := range h.hooks {
-		ctx, dd, err = hook.AfterBeginTx(ctx, opts, dd, err)
+	for i := len(h.hooks) - 1; i >= 0; i-- {
+		ctx, dd, err = h.hooks[i].AfterBeginTx(ctx, opts, dd, err)
 	}
 
 	return ctx, dd, err
@@ -70,9 +70,8 @@ func (h *multiHook) BeforeQueryContext(ctx context.Context, query string, args [
 }
 
 func (h *multiHook) AfterQueryContext(ctx context.Context, query string, args []driver.NamedValue, rows driver.Rows, err error) (context.Context, driver.Rows, error) {
-	for _, hook := range h.hooks {
-		ctx, rows, err = hook.AfterQueryContext(ctx, query, args, rows, err)
-
+	for i := len(h.hooks) - 1; i >= 0; i-- {
+		ctx, rows, err = h.hooks[i].AfterQueryContext(ctx, query, args, rows, err)
 	}
 
 	return ctx, rows, err
@@ -87,8 +86,8 @@ func (h *multiHook) BeforePrepareContext(ctx context.Context, query string, err 
 }
 
 func (h *multiHook) AfterPrepareContext(ctx context.Context, query string, s driver.Stmt, err error) (context.Context, driver.Stmt, error) {
-	for _, hook := range h.hooks {
-		ctx, s, err = hook.AfterPrepareContext(ctx, query, s, err)
+	for i := len(h.hooks) - 1; i >= 0; i-- {
+		ctx, s, err = h.hooks[i].AfterPrepareContext(ctx, query, s, err)
 	}
 
 	return ctx, s, err
@@ -103,8 +102,8 @@ func (h *multiHook) BeforeCommit(ctx context.Context, err error) (context.Contex
 }
 
 func (h *multiHook) AfterCommit(ctx context.Context, err error) (context.Context, error) {
-	for _, hook := range h.hooks {
-		ctx, err = hook.AfterCommit(ctx, err)
+	for i := len(h.hooks) - 1; i >= 0; i-- {
+		ctx, err = h.hooks[i].AfterCommit(ctx, err)
 	}
 
 	return ctx, err
@@ -119,8 +118,8 @@ func (h *multiHook) BeforeRollback(ctx context.Context, err error) (context.Cont
 }
 
 func (h *multiHook) AfterRollback(ctx context.Context, err error) (context.Context, error) {
-	for _, hook := range h.hooks {
-		ctx, err = hook.AfterRollback(ctx, err)
+	for i := len(h.hooks) - 1; i >= 0; i-- {
+		ctx, err = h.hooks[i].AfterRollback(ctx, err)
 	}
 
 	return ctx, err
@@ -135,8 +134,8 @@ func (h *multiHook) BeforeStmtQueryContext(ctx context.Context, query string, ar
 }
 
 func (h *multiHook) AfterStmtQueryContext(ctx context.Context, query string, args []driver.NamedValue, rows driver.Rows, err error) (context.Context, driver.Rows, error) {
-	for _, hook := range h.hooks {
-		ctx, rows, err = hook.AfterStmtQueryContext(ctx, query, args, rows, err)
+	for i := len(h.hooks) - 1; i >= 0; i-- {
+		ctx, rows, err = h.hooks[i].AfterStmtQueryContext(ctx, query, args, rows, err)
 	}
 
 	return ctx, rows, err
@@ -151,8 +150,8 @@ func (h *multiHook) BeforeStmtExecContext(ctx context.Context, query string, arg
 }
 
 func (h *multiHook) AfterStmtExecContext(ctx context.Context, query string, args []driver.NamedValue, r driver.Result, err error) (context.Context, driver.Result, error) {
-	for _, hook := range h.hooks {
-		ctx, r, err = hook.AfterStmtExecContext(ctx, query, args, r, err)
+	for i := len(h.hooks) - 1; i >= 0; i-- {
+		ctx, r, err = h.hooks[i].AfterStmtExecContext(ctx, query, args, r, err)
 	}
 
 	return ctx, r, err
