@@ -19,7 +19,7 @@ go get -u github.com/chenquan/sqlplus
 
 Implement the `sqlplus.Hook` interface and wrap it with `sqlplus.New(d driver.Driver, hook Hook) driver.Driver`
 
-# 👐ecology
+# 👐ecosystem
 
 - [sqltrace](https://github.com/chenquan/sqltrace): A low-code intrusion library that provides SQL tracing capabilities, suitable for any
   relational database (Sqlite3, MySQL, Oracle, SQL Server, PostgreSQL, TiDB, etc.) and ORM libraries for various
