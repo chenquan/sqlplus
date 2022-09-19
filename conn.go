@@ -18,6 +18,18 @@ type conn struct {
 	ConnHook
 }
 
+func (c *conn) Close() (err error) {
+	ctx, err := c.BeforeClose(context.Background(), nil)
+	defer func() {
+		_, err = c.AfterClose(ctx, err)
+	}()
+	if err != nil {
+		return err
+	}
+
+	return c.Conn.Close()
+}
+
 func (c *conn) ExecContext(ctx context.Context, query string, args []driver.NamedValue) (result driver.Result, err error) {
 	ctx, query, args, err = c.BeforeExecContext(ctx, query, args, nil)
 	defer func() {

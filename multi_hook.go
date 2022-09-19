@@ -93,6 +93,22 @@ func (h *multiHook) AfterPrepareContext(ctx context.Context, query string, s dri
 	return ctx, s, err
 }
 
+func (h *multiHook) BeforeClose(ctx context.Context, err error) (context.Context, error) {
+	for _, hook := range h.hooks {
+		ctx, err = hook.BeforeClose(ctx, err)
+	}
+
+	return ctx, err
+}
+
+func (h *multiHook) AfterClose(ctx context.Context, err error) (context.Context, error) {
+	for i := len(h.hooks) - 1; i >= 0; i-- {
+		ctx, err = h.hooks[i].AfterClose(ctx, err)
+	}
+
+	return ctx, err
+}
+
 func (h *multiHook) BeforeCommit(ctx context.Context, err error) (context.Context, error) {
 	for _, hook := range h.hooks {
 		ctx, err = hook.BeforeCommit(ctx, err)
