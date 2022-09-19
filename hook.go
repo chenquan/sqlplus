@@ -24,6 +24,8 @@ type (
 
 		BeforePrepareContext(ctx context.Context, query string, err error) (context.Context, string, error)
 		AfterPrepareContext(ctx context.Context, query string, ds driver.Stmt, err error) (context.Context, driver.Stmt, error)
+		BeforeClose(ctx context.Context, err error) (context.Context, error)
+		AfterClose(ctx context.Context, err error) (context.Context, error)
 	}
 	ConnectorHook interface {
 		BeforeConnect(ctx context.Context, err error) (context.Context, error)

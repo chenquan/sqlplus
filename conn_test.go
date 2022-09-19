@@ -244,7 +244,14 @@ func Test_conn_QueryContext(t *testing.T) {
 		assert.Contains(t, s, "BeforeQueryContext")
 		assert.Contains(t, s, "AfterQueryContext")
 	})
+}
 
+func TestMultiHook_Close(t *testing.T) {
+	c, m := createMockConn()
+	err := c.Close()
+	assert.NoError(t, err)
+	assert.Contains(t, m.String(), "AfterClose")
+	assert.Contains(t, m.String(), "BeforeClose")
 }
 
 func Test_namedValueToValue(t *testing.T) {

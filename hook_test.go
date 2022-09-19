@@ -12,6 +12,16 @@ type mockHook struct {
 	Args []string
 }
 
+func (m *mockHook) BeforeClose(ctx context.Context, err error) (context.Context, error) {
+	m.Write("BeforeClose")
+	return ctx, err
+}
+
+func (m *mockHook) AfterClose(ctx context.Context, err error) (context.Context, error) {
+	m.Write("AfterClose")
+	return ctx, err
+}
+
 func (m *mockHook) BeforeConnect(ctx context.Context, err error) (context.Context, error) {
 	m.Write("BeforeConnect")
 	return ctx, err
