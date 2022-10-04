@@ -83,6 +83,16 @@ func (m *mockConnBeginTx) BeginTx(_ context.Context, _ driver.TxOptions) (driver
 	return &mockTx{}, nil
 }
 
+var _ driver.ConnPrepareContext = (*mockConnPrepareContext)(nil)
+
+type mockConnPrepareContext struct {
+	*mockConn
+}
+
+func (m *mockConnPrepareContext) PrepareContext(ctx context.Context, query string) (driver.Stmt, error) {
+	return &mockStmt{}, nil
+}
+
 // -----------------
 
 func createMockConn() (*conn, *mockHook) {
