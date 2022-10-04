@@ -19,6 +19,7 @@ type (
 		prepareContext context.Context
 	}
 	prepareContextKey struct{}
+	stmtKey           struct{}
 )
 
 func PrepareContextFromContext(ctx context.Context) context.Context {
@@ -30,11 +31,28 @@ func PrepareContextFromContext(ctx context.Context) context.Context {
 	return nil
 }
 
+func StmtFromContext(ctx context.Context) interface {
+	driver.Stmt
+	driver.StmtExecContext
+	driver.StmtQueryContext
+} {
+	value := ctx.Value(stmtKey{})
+	if value != nil {
+		return nil
+	}
+
+	return value.(interface {
+		driver.Stmt
+		driver.StmtExecContext
+		driver.StmtQueryContext
+	})
+}
+
 // -----------------
 
 func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (rows driver.Rows, err error) {
 	query := s.query
-	ctx = context.WithValue(ctx, prepareContextKey{}, s.prepareContext)
+	ctx = s.newStmtContext(ctx)
 	ctx, args, err = s.BeforeStmtQueryContext(ctx, query, args, nil)
 	defer func() {
 		_, rows, err = s.AfterStmtQueryContext(ctx, query, args, rows, err)
@@ -59,7 +77,7 @@ func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (rows
 
 func (s *stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (r driver.Result, err error) {
 	query := s.query
-	ctx = context.WithValue(ctx, prepareContextKey{}, s.prepareContext)
+	ctx = s.newStmtContext(ctx)
 	ctx, args, err = s.BeforeStmtExecContext(ctx, query, args, nil)
 	defer func() {
 		_, r, err = s.AfterStmtExecContext(ctx, query, args, r, err)
@@ -79,4 +97,9 @@ func (s *stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (r dri
 
 		return s.Exec(value)
 	}
+}
+
+func (s *stmt) newStmtContext(ctx context.Context) context.Context {
+	ctx = context.WithValue(ctx, prepareContextKey{}, s.prepareContext)
+	return context.WithValue(ctx, stmtKey{}, s)
 }

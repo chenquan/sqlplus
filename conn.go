@@ -13,13 +13,17 @@ var (
 	_ driver.ExecerContext      = (*conn)(nil)
 )
 
-type conn struct {
-	driver.Conn
-	ConnHook
-}
+type (
+	conn struct {
+		driver.Conn
+		ConnHook
+	}
+	connKey struct{}
+)
 
 func (c *conn) Close() (err error) {
-	ctx, err := c.BeforeClose(context.Background(), nil)
+	ctx := c.newConnContext(context.Background())
+	ctx, err = c.BeforeClose(ctx, nil)
 	defer func() {
 		_, err = c.AfterClose(ctx, err)
 	}()
@@ -31,6 +35,7 @@ func (c *conn) Close() (err error) {
 }
 
 func (c *conn) ExecContext(ctx context.Context, query string, args []driver.NamedValue) (result driver.Result, err error) {
+	ctx = c.newConnContext(ctx)
 	ctx, query, args, err = c.BeforeExecContext(ctx, query, args, nil)
 	defer func() {
 		_, result, err = c.AfterExecContext(ctx, query, args, result, err)
@@ -60,6 +65,7 @@ func (c *conn) ExecContext(ctx context.Context, query string, args []driver.Name
 }
 
 func (c *conn) QueryContext(ctx context.Context, query string, args []driver.NamedValue) (rows driver.Rows, err error) {
+	ctx = c.newConnContext(ctx)
 	ctx, query, args, err = c.BeforeQueryContext(ctx, query, args, nil)
 	defer func() {
 		_, rows, err = c.AfterQueryContext(ctx, query, args, rows, err)
@@ -90,6 +96,7 @@ func (c *conn) QueryContext(ctx context.Context, query string, args []driver.Nam
 }
 
 func (c *conn) PrepareContext(ctx context.Context, query string) (s driver.Stmt, err error) {
+	ctx = c.newConnContext(ctx)
 	ctx, query, err = c.BeforePrepareContext(ctx, query, nil)
 	defer func() {
 		_, s, err = c.AfterPrepareContext(ctx, query, s, err)
@@ -113,6 +120,7 @@ func (c *conn) PrepareContext(ctx context.Context, query string) (s driver.Stmt,
 }
 
 func (c *conn) BeginTx(ctx context.Context, opts driver.TxOptions) (dd driver.Tx, err error) {
+	ctx = c.newConnContext(ctx)
 	ctx, opts, err = c.BeforeBeginTx(ctx, opts, nil)
 	defer func() {
 		_, dd, err = c.AfterBeginTx(ctx, opts, dd, err)
@@ -146,4 +154,25 @@ func namedValueToValue(named []driver.NamedValue) ([]driver.Value, error) {
 	}
 
 	return dargs, nil
+}
+
+func ConnFromContext(ctx context.Context) interface {
+	driver.Conn
+	driver.ConnPrepareContext
+	driver.ConnBeginTx
+} {
+	value := ctx.Value(connKey{})
+	if value == nil {
+		return nil
+	}
+
+	return value.(interface {
+		driver.Conn
+		driver.ConnPrepareContext
+		driver.ConnBeginTx
+	})
+}
+
+func (c *conn) newConnContext(ctx context.Context) context.Context {
+	return context.WithValue(ctx, connKey{}, c)
 }
