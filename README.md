@@ -9,6 +9,8 @@
 
 A sql enhancement tool library based on `database/sql/driver`
 
+> Unstable, use with caution in production environment.
+
 # 😜installation
 
 ```shell
