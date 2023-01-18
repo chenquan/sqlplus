@@ -11,10 +11,22 @@ type (
 		TxHook
 		txContext context.Context
 	}
+	txContextKey struct{}
 )
 
+func TxContextFromContext(ctx context.Context) context.Context {
+	value := ctx.Value(txContextKey{})
+	if value != nil {
+		return value.(context.Context)
+	}
+
+	return nil
+}
+
+// -----------------
+
 func (t *tx) Commit() (err error) {
-	ctx := t.txContext
+	ctx := context.WithValue(context.Background(), txContextKey{}, t.txContext)
 	ctx, err = t.BeforeCommit(ctx, nil)
 	defer func() {
 		_, err = t.AfterCommit(ctx, err)
@@ -32,7 +44,7 @@ func (t *tx) Commit() (err error) {
 }
 
 func (t *tx) Rollback() (err error) {
-	ctx := t.txContext
+	ctx := context.WithValue(context.Background(), txContextKey{}, t.txContext)
 	ctx, err = t.BeforeRollback(ctx, nil)
 	defer func() {
 		_, err = t.AfterRollback(ctx, err)

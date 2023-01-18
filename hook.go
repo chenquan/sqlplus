@@ -24,7 +24,6 @@ type (
 
 		BeforePrepareContext(ctx context.Context, query string, err error) (context.Context, string, error)
 		AfterPrepareContext(ctx context.Context, query string, ds driver.Stmt, err error) (context.Context, driver.Stmt, error)
-
 		BeforeClose(ctx context.Context, err error) (context.Context, error)
 		AfterClose(ctx context.Context, err error) (context.Context, error)
 	}
@@ -35,14 +34,12 @@ type (
 	TxHook interface {
 		BeforeCommit(ctx context.Context, err error) (context.Context, error)
 		AfterCommit(ctx context.Context, err error) (context.Context, error)
-
 		BeforeRollback(ctx context.Context, err error) (context.Context, error)
 		AfterRollback(ctx context.Context, err error) (context.Context, error)
 	}
 	StmtHook interface {
 		BeforeStmtQueryContext(ctx context.Context, query string, args []driver.NamedValue, err error) (context.Context, []driver.NamedValue, error)
 		AfterStmtQueryContext(ctx context.Context, query string, args []driver.NamedValue, rows driver.Rows, err error) (context.Context, driver.Rows, error)
-
 		BeforeStmtExecContext(ctx context.Context, query string, args []driver.NamedValue, err error) (context.Context, []driver.NamedValue, error)
 		AfterStmtExecContext(ctx context.Context, query string, args []driver.NamedValue, r driver.Result, err error) (context.Context, driver.Result, error)
 	}

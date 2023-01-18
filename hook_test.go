@@ -74,6 +74,10 @@ func (m *mockHook) AfterPrepareContext(ctx context.Context, _ string, ds driver.
 
 func (m *mockHook) BeforeCommit(ctx context.Context, err error) (context.Context, error) {
 	m.Write("BeforeCommit")
+	txContext := TxContextFromContext(ctx)
+	if txContext == nil {
+		panic("txContext is nil")
+	}
 
 	prepareContext := PrepareContextFromContext(ctx)
 	if prepareContext != nil {
@@ -85,6 +89,10 @@ func (m *mockHook) BeforeCommit(ctx context.Context, err error) (context.Context
 
 func (m *mockHook) AfterCommit(ctx context.Context, err error) (context.Context, error) {
 	m.Write("AfterCommit")
+	txContext := TxContextFromContext(ctx)
+	if txContext == nil {
+		panic("txContext is nil")
+	}
 
 	prepareContext := PrepareContextFromContext(ctx)
 	if prepareContext != nil {
@@ -96,6 +104,10 @@ func (m *mockHook) AfterCommit(ctx context.Context, err error) (context.Context,
 
 func (m *mockHook) BeforeRollback(ctx context.Context, err error) (context.Context, error) {
 	m.Write("BeforeRollback")
+	txContext := TxContextFromContext(ctx)
+	if txContext == nil {
+		panic("txContext is nil")
+	}
 
 	prepareContext := PrepareContextFromContext(ctx)
 	if prepareContext != nil {
@@ -107,6 +119,10 @@ func (m *mockHook) BeforeRollback(ctx context.Context, err error) (context.Conte
 
 func (m *mockHook) AfterRollback(ctx context.Context, err error) (context.Context, error) {
 	m.Write("AfterRollback")
+	txContext := TxContextFromContext(ctx)
+	if txContext == nil {
+		panic("txContext is nil")
+	}
 
 	prepareContext := PrepareContextFromContext(ctx)
 	if prepareContext != nil {
@@ -123,6 +139,11 @@ func (m *mockHook) BeforeStmtQueryContext(ctx context.Context, _ string, args []
 		panic("prepareContext is nil")
 	}
 
+	txContext := TxContextFromContext(ctx)
+	if txContext != nil {
+		panic("txContext is not nil")
+	}
+
 	return ctx, args, err
 }
 
@@ -131,6 +152,11 @@ func (m *mockHook) AfterStmtQueryContext(ctx context.Context, _ string, _ []driv
 	prepareContext := PrepareContextFromContext(ctx)
 	if prepareContext == nil {
 		panic("prepareContext is nil")
+	}
+
+	txContext := TxContextFromContext(ctx)
+	if txContext != nil {
+		panic("txContext is not nil")
 	}
 
 	return ctx, rows, err
@@ -143,6 +169,11 @@ func (m *mockHook) BeforeStmtExecContext(ctx context.Context, _ string, args []d
 		panic("prepareContext is nil")
 	}
 
+	txContext := TxContextFromContext(ctx)
+	if txContext != nil {
+		panic("txContext is not nil")
+	}
+
 	return ctx, args, err
 }
 
@@ -151,6 +182,11 @@ func (m *mockHook) AfterStmtExecContext(ctx context.Context, _ string, _ []drive
 	prepareContext := PrepareContextFromContext(ctx)
 	if prepareContext == nil {
 		panic("prepareContext is nil")
+	}
+
+	txContext := TxContextFromContext(ctx)
+	if txContext != nil {
+		panic("txContext is not nil")
 	}
 
 	return ctx, r, err
